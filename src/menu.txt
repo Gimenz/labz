@@ -1,0 +1,13 @@
+> *Self Bot* <
+
+*Media*
+• .sticker [--flags]
+
+*Tools*
+• .> <code>
+• .$ <args>
+• .ava <mention/reply/number>
+• .detectstory <on/off>
+• .view <reply viewOnce>
+• .upload <reply media msg>
+• .getstory <reply stories>

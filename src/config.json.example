@@ -1,0 +1,14 @@
+{
+	"owner": ["6281@s.whatsapp.net"],
+	"api": {
+		"masgi": "https://masgimenz.my.id"
+	},
+	"exif": {
+		"packname": "mg.bot",
+		"author": "@gimenz.id"
+	},
+	"downloadStory": true,
+	"session": "session",
+	"store": "./db/baileys_store.json",
+	"igCookie": "sessionid=48262036722%3ARO6L3Uh0SmAmLl%3A3%3sehidupsematidenganmu; ds_user_id=selamanya; csrftoken=OqJOvUAU9OfxRvhAyWTcVb8PKIawIwPr"
+}
