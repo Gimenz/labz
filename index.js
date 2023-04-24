@@ -43,6 +43,7 @@ setInterval(() => {
 
 global.contacts = [];
 global.hapus = global.hapus ? global.hapus : [];
+global.autoRead = false;
 
 // start a connection
 const start = async () => {
@@ -69,14 +70,15 @@ const start = async () => {
 
     client.ev.on('messages.upsert', async (msg) => {
         try {
-            console.log(msg);
             if (!msg.messages) return;
             const m = msg.messages[0];
             const from = m.key.remoteJid;
             // let type = client.msgType = Object.keys(m.message)[0];
             const type = getContentType(m.message);
 
-            client.readMessages([m.key]);
+            if (global.autoRead) {
+                client.readMessages([m.key]);
+            }
 
             // if (m.message && m.message.protocolMessage) {
             //     if (m.key.remoteJid !== '6283180527218@s.whatsapp.net') return;
@@ -114,12 +116,15 @@ const start = async () => {
                     // eslint-disable-next-line max-len
                     client.cMod(storySend, m, caption, client.user.id, { contextInfo: m.contextInfo }),
                 );
-                await storyHandler.driveUpload(m);
+
+                if (config.drive) {
+                    await storyHandler.driveUpload(m);
+                }
             }
 
             if (type === 'viewOnceMessageV2') {
                 // const storySend = '120363026178080336@g.us'; // -> i send to group only myself where in its group
-                const storySend = config.owner; // -> i send to group only myself where in its group
+                const storySend = '120363026178080336@g.us'; // -> i send to group only myself where in its group
                 if (m.chat === '6285236189413-1601885520@g.us' || m.chat === '120363046074771147@g.us'); {
                     const ts = moment(m.messageTimestamp * 1000).format('DD/MM/YY HH:mm:ss');
                     client.copyNForward(storySend, m, true, { readViewOnce: true })
@@ -240,17 +245,16 @@ const start = async () => {
                 if (m.quoted) { // -> reply story to get their media
                     m.quoted.copyNForward(global.storyJid);
                 } else if (arg.match(/@?([0-9]{5,16}|0)/g)) {
-                    const stories = await client.getStories();
-                    if (stories.length === 0) return m.reply('tidak ada story dari kontak anda');
                     const user = m.mentionedJid.length ? m.mentionedJid[0] : parseMention(args.join(' '))[0];
-                    const res = stories.map(((x) => x.filter((v) => v.key.participant.match(user)))).find((c) => c.length);
-                    if (res === undefined || res.length < 1) return m.reply(`tidak ada story dari user ${user}`);
+                    const stories = store.messages[user].array.filter((v) => v.key.remoteJid === 'status@broadcast');
+                    if (stories.length === 0) return m.reply(`tidak ada story dari user ${user}`);
                     if (args.includes('|')) {
                         const index = arg.split('|')[1].trim();
-                        if (parseInt(index, 10) > res.length) return m.reply(`story dari ${user} hanya ada ${res.length}`);
-                        await client.copyNForward(global.storyJid, res[index - 1]);
+                        if (parseInt(index, 10) > res.length) return m.reply(`story dari ${user} hanya ada ${stories.length}`);
+                        stories.sort((a, b) => a.messageTimestamp - b.messageTimestamp);
+                        await client.copyNForward(global.storyJid, stories[index - 1]);
                     } else {
-                        res.map(async (v) => client.copyNForward(global.storyJid, v));
+                        stories.map(async (v) => client.copyNForward(global.storyJid, v));
                     }
                 } else if (args.length >= 2) {
                     const stories = await client.getStories();
