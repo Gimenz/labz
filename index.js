@@ -119,7 +119,7 @@ const start = async () => {
 
             if (type === 'viewOnceMessageV2') {
                 // const storySend = '120363026178080336@g.us'; // -> i send to group only myself where in its group
-                const storySend = '6285236189413@c.us'; // -> i send to group only myself where in its group
+                const storySend = config.owner; // -> i send to group only myself where in its group
                 if (m.chat === '6285236189413-1601885520@g.us' || m.chat === '120363046074771147@g.us'); {
                     const ts = moment(m.messageTimestamp * 1000).format('DD/MM/YY HH:mm:ss');
                     client.copyNForward(storySend, m, true, { readViewOnce: true })
