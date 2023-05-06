@@ -1,13 +1,21 @@
 > *Self Bot* <
+coded by @gimenz.id
+
+*Chat Utils*
+• .deleted -> to check deleted chat from user
+• .view <reply viewOnce> -> to view media in viewOnce message
 
 *Media*
 • .sticker [--flags]
+• .tiktok <url>
+• .ig <url>
+• .igs <url/username> | [index]
+• .igdp <username>
 
 *Tools*
 • .> <code>
 • .$ <args>
 • .ava <mention/reply/number>
 • .detectstory <on/off>
-• .view <reply viewOnce>
 • .upload <reply media msg>
 • .getstory <reply stories>

@@ -246,11 +246,11 @@ const start = async () => {
                     m.quoted.copyNForward(global.storyJid);
                 } else if (arg.match(/@?([0-9]{5,16}|0)/g)) {
                     const user = m.mentionedJid.length ? m.mentionedJid[0] : parseMention(args.join(' '))[0];
-                    const stories = store.messages[user].array.filter((v) => v.key.remoteJid === 'status@broadcast');
+                    const stories = store.messages['status@broadcast'].array.filter((v) => v.participant === user);
                     if (stories.length === 0) return m.reply(`tidak ada story dari user ${user}`);
                     if (args.includes('|')) {
                         const index = arg.split('|')[1].trim();
-                        if (parseInt(index, 10) > res.length) return m.reply(`story dari ${user} hanya ada ${stories.length}`);
+                        if (parseInt(index, 10) > stories.length) return m.reply(`story dari ${user} hanya ada ${stories.length}`);
                         stories.sort((a, b) => a.messageTimestamp - b.messageTimestamp);
                         await client.copyNForward(global.storyJid, stories[index - 1]);
                     } else {
@@ -301,6 +301,17 @@ const start = async () => {
                 } catch (error) {
                     console.log(error);
                     await m.reply(util.format(error));
+                }
+                break;
+            case 'igdp':
+                if (args.length > 1) return m.reply('username kok lebih dari 1 kata, sungguh tidak logis');
+                if (args.length == 0) return m.reply('why?');
+                try {
+                    const res = await ig.fetchUser(args[0]);
+                    const caption = `https://instagram.com/${res.username}`;
+                    client.sendFileFromUrl(m.chat, res.hd_profile_pic_url_info.url, caption, m);
+                } catch (error) {
+                    m.reply(uitl.format(error));
                 }
                 break;
             case 'ig':
@@ -493,6 +504,7 @@ const start = async () => {
                 }
                 break;
             case 'view':
+            case 'v':
                 if (m.quoted) {
                     if (m.quoted.mtype !== 'viewOnceMessageV2') return m.reply('Bukan viewOnce msg!');
                     m.quoted.copyNForward(m.chat, true, { readViewOnce: true });
